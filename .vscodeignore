@@ -1,0 +1,13 @@
+node_modules/
+*.vsix
+package-lock.json
+.vscode
+docs
+ignore
+*.png
+!icon.png
+*.gif
+*.mp4
+*.sh
+.gitignore
+vscode.d.ts
