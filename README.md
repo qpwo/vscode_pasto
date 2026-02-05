@@ -1,46 +1,20 @@
-## How to use this template
+# Pasto
 
-```
-# find all todo:
-cat extension.js package.json README.md rebuild_reinstall.sh | grep -i todo
-# download vscode declarations -- optional
-curl -L 'https://raw.githubusercontent.com/microsoft/vscode/main/src/vscode-dts/vscode.d.ts' -o vscode.d.ts
-# rebuild/package extension
-bash rebuild_reinstall.sh
-# publish extension:
-https://marketplace.visualstudio.com/manage/
-```
+Pasto provides smart pasting commands for VS Code.
 
-1.  Globally replace all `todo` placeholders in `package.json`, `README.md`, and `extension.js`.
-2.  Replace `icon_orig.png` with your own icon (128x128 minimum).
-3.  Create a `screencap.mp4` to demo your extension.
-4.  Write your extension logic in `extension.js`.
-5.  Run `npm install`.
-6.  Run `./rebuild_reinstall.sh` to build, generate assets, and install locally.
+![screencap](https://raw.githubusercontent.com/qpwo/vscode_pasto/main/pasto.gif)
 
----
+## Features
 
-# TODO_extension_display_name
+### Paste Lines No Blanks (`Ctrl+Shift+V`)
+Pastes content from clipboard, removing any blank lines, and always inserting on the line *below* the cursor.
 
-TODO_description
-
-![screencap](https://raw.githubusercontent.com/TODO_username/TODO_repo_name/main/screencap.gif)
+### Paste Pivot (`Ctrl+Cmd+V` on Mac, `Ctrl+Alt+V` on Win/Linux)
+Pastes content in the "opposite" format:
+- If clipboard contains multiple lines: Joins them into a single line (space-separated) and pastes at cursor.
+- If clipboard contains words (single line): Splits them into multiple lines and pastes on the line *below* the cursor.
 
 ## Usage
 
-1. ctrl-shift-p
-2. "TODO_command_title"
-3. enter regex (last input is preserved)
-4. search results open up in new tab, looks like this:
-
-```
-term1_term1name: the result
-term1_term1name: the result here
-term2_term2name: the result again
-term2_term2name: the result is here
-...
-```
-
-[extension](https://marketplace.visualstudio.com/items?itemName=TODO_username.TODO_extension_id)
-
-[repo](https://github.com/TODO_username/TODO_repo_name)
+1. Copy text.
+2. Use keybindings or Command Palette ("Pasto: ...").

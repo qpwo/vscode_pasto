@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 set -ex
-npm i
-rm -v *.vsix icon.png screencap.gif || true
-convert icon_orig.png -resize 128x128 icon.png || true
-ffmpeg -i screencap.mp4 -vf "fps=15,scale=720:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse" -loop 0 screencap.gif || true
-
+npm install
+rm -v *.vsix || true
+# Skipping icon/gif generation as source files missing
+convert pasto.png -resize 128x128 icon.png
 ./node_modules/.bin/vsce package
-code --install-extension *.vsix
+# Install if code is available (might fail in restricted envs)
+code --install-extension *.vsix || echo "Install failed or code not found, manual install required."
