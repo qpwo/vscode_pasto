@@ -2,7 +2,7 @@
   "name": "vscode-pasto",
   "displayName": "Pasto",
   "description": "Smart pasting commands: Paste Lines No Blanks, and Paste Pivot.",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "icon": "icon.png",
   "publisher": "qpwo",
   "repository": {

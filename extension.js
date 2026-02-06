@@ -8,6 +8,11 @@ const vscode = require('vscode');
  * 2. pasto.pastePivot: Paste "opposite" way. Lines -> Words (at cursor). Words -> Lines (on new lines).
  */
 async function activate(context) {
+    // Helper to sort selections to ensure safe calculation of offsets
+    const getSortedSelections = (editor) => {
+        return editor.selections.slice().sort((a, b) => a.start.compareTo(b.start));
+    };
+
     // Command 1: Paste on new lines without blank lines
     context.subscriptions.push(vscode.commands.registerCommand('pasto.pasteNewLines', async () => {
         const editor = vscode.window.activeTextEditor;
@@ -21,8 +26,12 @@ async function activate(context) {
         if (lines.length === 0) return;
         const newText = lines.join('\n');
 
+        const newSelections = [];
+        let lineOffset = 0;
+        const numLinesAdded = lines.length;
+
         await editor.edit(editBuilder => {
-            for (const selection of editor.selections) {
+            for (const selection of getSortedSelections(editor)) {
                 const doc = editor.document;
                 const lineIndex = selection.end.line;
 
@@ -30,12 +39,26 @@ async function activate(context) {
                 if (lineIndex >= doc.lineCount - 1) {
                     const pos = doc.lineAt(lineIndex).range.end;
                     editBuilder.insert(pos, '\n' + newText);
+
+                    // Select the pasted text
+                    const startLine = lineIndex + 1 + lineOffset;
+                    const endLine = startLine + numLinesAdded - 1;
+                    const endChar = lines[lines.length - 1].length;
+                    newSelections.push(new vscode.Selection(startLine, 0, endLine, endChar));
                 } else {
                     const pos = new vscode.Position(lineIndex + 1, 0);
                     editBuilder.insert(pos, newText + '\n');
+
+                    // Select the pasted text (lines)
+                    const startLine = lineIndex + 1 + lineOffset;
+                    const endLine = startLine + numLinesAdded;
+                    newSelections.push(new vscode.Selection(startLine, 0, endLine, 0));
                 }
+                lineOffset += numLinesAdded;
             }
         });
+
+        editor.selections = newSelections;
     }));
 
     // Command 2: Paste pivot (lines to words, words to lines)
@@ -53,29 +76,74 @@ async function activate(context) {
             // Case A: Clipboard has lines -> Paste as Words (at cursor)
             // Join lines with spaces
             const words = text.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0).join(' ');
+
+            const newSelections = [];
+            let lineAdjustment = 0;
+            let charAdjustment = 0;
+            let lastLine = -1;
+
             await editor.edit(editBuilder => {
-                for (const selection of editor.selections) {
+                for (const selection of getSortedSelections(editor)) {
+                    const startLine = selection.start.line;
+
+                    // Reset charAdjustment if we moved to a new line (in original document terms relative to processing order)
+                    if (startLine > lastLine) {
+                        charAdjustment = 0;
+                    }
+
+                    const newStartLine = startLine + lineAdjustment;
+                    const newStartChar = selection.start.character + charAdjustment;
+
                     editBuilder.replace(selection, words);
+
+                    const newEndLine = newStartLine;
+                    const newEndChar = newStartChar + words.length;
+                    newSelections.push(new vscode.Selection(newStartLine, newStartChar, newEndLine, newEndChar));
+
+                    const removedLines = selection.end.line - selection.start.line;
+                    lineAdjustment -= removedLines;
+
+                    // Calculate char adjustment for the line we just ended on
+                    charAdjustment = newEndChar - selection.end.character;
+                    lastLine = selection.end.line;
                 }
             });
+            editor.selections = newSelections;
         } else {
             // Case B: Clipboard has words -> Paste as Lines (on new line)
             // Split by whitespace
-            const lines = trimmed.split(/\s+/).join('\n');
+            const linesArr = trimmed.split(/\s+/);
+            const lines = linesArr.join('\n');
+
+            const newSelections = [];
+            let lineOffset = 0;
+            const numLinesAdded = linesArr.length;
+
             await editor.edit(editBuilder => {
-                for (const selection of editor.selections) {
+                for (const selection of getSortedSelections(editor)) {
                     const doc = editor.document;
                     const lineIndex = selection.end.line;
 
                     if (lineIndex >= doc.lineCount - 1) {
                         const pos = doc.lineAt(lineIndex).range.end;
                         editBuilder.insert(pos, '\n' + lines);
+
+                        const startLine = lineIndex + 1 + lineOffset;
+                        const endLine = startLine + numLinesAdded - 1;
+                        const endChar = linesArr[linesArr.length - 1].length;
+                        newSelections.push(new vscode.Selection(startLine, 0, endLine, endChar));
                     } else {
                         const pos = new vscode.Position(lineIndex + 1, 0);
                         editBuilder.insert(pos, lines + '\n');
+
+                        const startLine = lineIndex + 1 + lineOffset;
+                        const endLine = startLine + numLinesAdded;
+                        newSelections.push(new vscode.Selection(startLine, 0, endLine, 0));
                     }
+                    lineOffset += numLinesAdded;
                 }
             });
+            editor.selections = newSelections;
         }
     }));
 }
