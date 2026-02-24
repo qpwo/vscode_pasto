@@ -1,20 +1,18 @@
-# Pasto
+Pasto
 
-Pasto provides smart pasting commands for VS Code.
+Smart pasting commands for VS Code.
 
 ![screencap](https://raw.githubusercontent.com/qpwo/vscode_pasto/main/pasto.gif)
 
-## Features
+Commands:
 
-### Paste Lines No Blanks (`Ctrl+Shift+V`)
-Pastes content from clipboard, removing any blank lines, and replacing the selected text. Works in editors and terminals.
+Paste All On One Line (Ctrl+Cmd+V on Mac, Ctrl+Alt+V on Win/Linux):
+Joins clipboard text into a single space-separated line.
 
-### Paste Pivot (`Ctrl+Cmd+V` on Mac, `Ctrl+Alt+V` on Win/Linux)
-Pastes content in the "opposite" format. Works in editors and terminals:
-- If clipboard contains multiple lines: Joins them into a single line (space-separated) and pastes at cursor.
-- If clipboard contains words (single line): Splits them into multiple lines and pastes on the line *below* the cursor (or directly into the terminal).
+Paste One Word Per Line (Ctrl+Cmd+Shift+V on Mac, Ctrl+Alt+Shift+V on Win/Linux):
+Pastes each space-separated word on its own line.
 
-## Usage
+Paste Drops Newlines (Ctrl+Shift+V):
+Pastes clipboard text, removing any blank lines.
 
-1. Copy text.
-2. Use keybindings or Command Palette ("Pasto: ...").
+Works in both editors and terminals.

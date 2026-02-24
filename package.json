@@ -1,8 +1,8 @@
 {
   "name": "vscode-pasto",
   "displayName": "Pasto",
-  "description": "Smart pasting commands: Paste Lines No Blanks, and Paste Pivot.",
-  "version": "0.0.3",
+  "description": "paste one line, paste one word per line, and paste lines no blanks.",
+  "version": "0.0.4",
   "icon": "icon.png",
   "publisher": "qpwo",
   "repository": {
@@ -28,12 +28,20 @@
         "title": "Pasto: Paste Lines No Blanks (Terminal)"
       },
       {
-        "command": "pasto.pastePivot",
-        "title": "Pasto: Paste Pivot"
+        "command": "pasto.pasteOneLine",
+        "title": "Pasto: Paste One Line"
       },
       {
-        "command": "pasto.pastePivotTerminal",
-        "title": "Pasto: Paste Pivot (Terminal)"
+        "command": "pasto.pasteOneLineTerminal",
+        "title": "Pasto: Paste One Line (Terminal)"
+      },
+      {
+        "command": "pasto.pasteWordsOnLines",
+        "title": "Pasto: Paste One Word Per Line"
+      },
+      {
+        "command": "pasto.pasteWordsOnLinesTerminal",
+        "title": "Pasto: Paste One Word Per Line (Terminal)"
       }
     ],
     "keybindings": [
@@ -50,15 +58,27 @@
         "when": "terminalFocus"
       },
       {
-        "command": "pasto.pastePivot",
+        "command": "pasto.pasteOneLine",
         "key": "ctrl+alt+v",
         "mac": "ctrl+cmd+v",
         "when": "editorTextFocus"
       },
       {
-        "command": "pasto.pastePivotTerminal",
+        "command": "pasto.pasteOneLineTerminal",
         "key": "ctrl+alt+v",
         "mac": "ctrl+cmd+v",
+        "when": "terminalFocus"
+      },
+      {
+        "command": "pasto.pasteWordsOnLines",
+        "key": "ctrl+alt+shift+v",
+        "mac": "ctrl+cmd+shift+v",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "pasto.pasteWordsOnLinesTerminal",
+        "key": "ctrl+alt+shift+v",
+        "mac": "ctrl+cmd+shift+v",
         "when": "terminalFocus"
       }
     ]
