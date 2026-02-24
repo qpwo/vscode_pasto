@@ -24,8 +24,16 @@
         "title": "Pasto: Paste Lines No Blanks"
       },
       {
+        "command": "pasto.pasteNewLinesTerminal",
+        "title": "Pasto: Paste Lines No Blanks (Terminal)"
+      },
+      {
         "command": "pasto.pastePivot",
         "title": "Pasto: Paste Pivot"
+      },
+      {
+        "command": "pasto.pastePivotTerminal",
+        "title": "Pasto: Paste Pivot (Terminal)"
       }
     ],
     "keybindings": [
@@ -36,10 +44,22 @@
         "when": "editorTextFocus"
       },
       {
+        "command": "pasto.pasteNewLinesTerminal",
+        "key": "ctrl+shift+v",
+        "mac": "ctrl+shift+v",
+        "when": "terminalFocus"
+      },
+      {
         "command": "pasto.pastePivot",
         "key": "ctrl+alt+v",
         "mac": "ctrl+cmd+v",
         "when": "editorTextFocus"
+      },
+      {
+        "command": "pasto.pastePivotTerminal",
+        "key": "ctrl+alt+v",
+        "mac": "ctrl+cmd+v",
+        "when": "terminalFocus"
       }
     ]
   },

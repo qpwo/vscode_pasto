@@ -26,39 +26,25 @@ async function activate(context) {
         if (lines.length === 0) return;
         const newText = lines.join('\n');
 
-        const newSelections = [];
-        let lineOffset = 0;
-        const numLinesAdded = lines.length;
-
         await editor.edit(editBuilder => {
-            for (const selection of getSortedSelections(editor)) {
-                const doc = editor.document;
-                const lineIndex = selection.end.line;
-
-                // If last line, append \n then text. Else insert text\n at next line start.
-                if (lineIndex >= doc.lineCount - 1) {
-                    const pos = doc.lineAt(lineIndex).range.end;
-                    editBuilder.insert(pos, '\n' + newText);
-
-                    // Select the pasted text
-                    const startLine = lineIndex + 1 + lineOffset;
-                    const endLine = startLine + numLinesAdded - 1;
-                    const endChar = lines[lines.length - 1].length;
-                    newSelections.push(new vscode.Selection(startLine, 0, endLine, endChar));
-                } else {
-                    const pos = new vscode.Position(lineIndex + 1, 0);
-                    editBuilder.insert(pos, newText + '\n');
-
-                    // Select the pasted text (lines)
-                    const startLine = lineIndex + 1 + lineOffset;
-                    const endLine = startLine + numLinesAdded;
-                    newSelections.push(new vscode.Selection(startLine, 0, endLine, 0));
-                }
-                lineOffset += numLinesAdded;
+            for (const selection of editor.selections) {
+                editBuilder.replace(selection, newText);
             }
         });
+    }));
 
-        editor.selections = newSelections;
+    // Command 1b: Paste on new lines without blank lines (Terminal)
+    context.subscriptions.push(vscode.commands.registerCommand('pasto.pasteNewLinesTerminal', async () => {
+        const text = await vscode.env.clipboard.readText();
+        if (!text) return;
+
+        const lines = text.split(/\r?\n/).filter(line => line.trim().length > 0);
+        if (lines.length === 0) return;
+        const newText = lines.join('\n');
+
+        if (vscode.window.activeTerminal) {
+            vscode.window.activeTerminal.sendText(newText, false);
+        }
     }));
 
     // Command 2: Paste pivot (lines to words, words to lines)
@@ -144,6 +130,26 @@ async function activate(context) {
                 }
             });
             editor.selections = newSelections;
+        }
+    }));
+
+    // Command 2b: Paste pivot (Terminal)
+    context.subscriptions.push(vscode.commands.registerCommand('pasto.pastePivotTerminal', async () => {
+        const text = await vscode.env.clipboard.readText();
+        if (!text) return;
+
+        const trimmed = text.trim();
+        const isLines = trimmed.includes('\n');
+
+        let newText;
+        if (isLines) {
+            newText = text.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0).join(' ');
+        } else {
+            newText = trimmed.split(/\s+/).join('\n');
+        }
+
+        if (vscode.window.activeTerminal) {
+            vscode.window.activeTerminal.sendText(newText, false);
         }
     }));
 }
